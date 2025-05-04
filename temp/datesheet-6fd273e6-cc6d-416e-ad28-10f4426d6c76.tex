@@ -1,0 +1,90 @@
+
+\documentclass[a4paper,12pt]{article}
+
+% Setting page geometry for proper margins
+\usepackage[margin=1in]{geometry}
+
+% Including packages for tables and colors
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{pdflscape}
+
+% Defining colors for table styling
+\definecolor{headerbg}{RGB}{79,129,189}
+\definecolor{roweven}{RGB}{240,240,240}
+\definecolor{rowodd}{RGB}{255,228,225}
+
+% Setting default font to Noto Serif
+\usepackage{noto}
+
+% Configuring table column types
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% Starting the document
+\begin{document}
+
+% Centering the title section
+\begin{center}
+
+% Adding university name
+{\Large\bfseries INTERNATIONAL ISLAMIC UNIVERSITY}\\[0.5cm]
+
+% Adding department name
+{\large\bfseries COMPUTER SCIENCE}\\[0.3cm]
+
+% Adding exam period and academic year
+{\normalsize\bfseries MID DATESHEET 1971}\\[0.3cm]
+
+% Adding duration
+{\normalsize Duration: 01/05/2025 -- 31/05/2025}\\[0.3cm]
+
+% Adding version release date
+{\normalsize Version Release Date: 03 May 2025}\\[0.5cm]
+
+\end{center}
+
+% Starting landscape mode for the table
+\begin{landscape}
+
+% Setting font size for the table
+\small
+
+% Beginning the longtable for the schedule
+\begin{longtable}{L{2.5cm} C{2cm} C{1.5cm} L{3cm} L{4cm} C{2cm} L{3cm}}
+\toprule
+\rowcolor{headerbg}
+{\color{white}\bfseries Date (Day)} &
+{\color{white}\bfseries Time} &
+{\color{white}\bfseries Semester} &
+{\color{white}\bfseries Course} &
+{\color{white}\bfseries Instructor(s)} &
+{\color{white}\bfseries Batch} &
+{\color{white}\bfseries Room(s)} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+
+\rowcolor{roweven}
+\multirow{1}{*}{\raggedright 01/05/2025 (Thursday)} & \multirow{1}{*}{\centering 09:00 AM - 11:00 AM} & \multirow{1}{*}{\centering 1} & CS101	 Introduction to Computing	 & Jarrod Mathis & BS CS 2025 A & cs depart \\
+\rowcolor{rowodd}
+\multirow{1}{*}{\raggedright 01/05/2025 (Thursday)} & \multirow{1}{*}{\centering 11:30 AM - 01:30 PM} & \multirow{1}{*}{\centering 1} & ENG101	 English Comprehension	 & Chantale Kinney & BS CS 2025 A & cs \\
+\rowcolor{roweven}
+\multirow{1}{*}{\raggedright 02/05/2025 (Friday)} & \multirow{1}{*}{\centering 09:00 AM - 11:00 AM} & \multirow{1}{*}{\centering 1} & MTH101 Calculus And Analytical Geometry	 & ali & BS CS 2025 A & cs depart \\
+\rowcolor{rowodd}
+\multirow{1}{*}{\raggedright 02/05/2025 (Friday)} & \multirow{1}{*}{\centering 11:30 AM - 01:30 PM} & \multirow{1}{*}{\centering 1} & PHY101	 Physics	 & salman & BS CS 2025 A & cs \\
+\rowcolor{roweven}
+\multirow{1}{*}{\raggedright 05/05/2025 (Monday)} & \multirow{1}{*}{\centering 09:00 AM - 11:00 AM} & \multirow{1}{*}{\centering 1} & PAK301	 Pakistan Studies	 & Jarrod Mathis & BS CS 2025 A & cs depart \\
+
+
+\end{longtable}
+
+\end{landscape}
+
+\end{document}
+  

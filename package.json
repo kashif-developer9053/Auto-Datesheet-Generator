@@ -1,0 +1,50 @@
+{
+  "name": "datesheet-generator",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "prisma:generate": "prisma generate",
+    "prisma:push": "prisma db push",
+    "prisma:seed": "node prisma/seed.js"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^7.0.2",
+    "@mui/material": "^7.0.2",
+    "@mui/x-date-pickers": "^8.1.0",
+    "@prisma/client": "^6.6.0",
+    "bcryptjs": "^2.4.3",
+    "date-fns": "^4.1.0",
+    "file-saver": "^2.0.5",
+    "firebase": "^11.6.1",
+    "framer-motion": "^12.9.4",
+    "html-pdf-node": "^1.0.8",
+    "jspdf": "^3.0.1",
+    "jspdf-autotable": "^5.0.2",
+    "lucide-react": "^0.503.0",
+    "mongodb": "^6.16.0",
+    "mongoose": "^8.14.0",
+    "next": "15.3.1",
+    "next-auth": "^4.24.11",
+    "react": "^19.0.0",
+    "react-datepicker": "^8.3.0",
+    "react-dom": "^19.0.0",
+    "xlsx-js-style": "^1.2.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "eslint": "^9",
+    "eslint-config-next": "15.3.1",
+    "prisma": "^6.6.0",
+    "tailwindcss": "^4"
+  }
+}
