@@ -2,15 +2,15 @@
   "name": "datesheet-generator",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "prisma:generate": "prisma generate",
-    "prisma:push": "prisma db push",
-    "prisma:seed": "node prisma/seed.js"
-  },
+ "scripts": {
+  "dev": "next dev --turbopack",
+  "build": "prisma generate && next build",
+  "start": "next start",
+  "lint": "next lint",
+  "prisma:generate": "prisma generate",
+  "prisma:push": "prisma db push",
+  "prisma:seed": "node prisma/seed.js"
+},
   "prisma": {
     "seed": "node prisma/seed.js"
   },
