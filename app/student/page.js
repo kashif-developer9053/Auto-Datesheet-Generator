@@ -20,7 +20,7 @@ import {
   Grid,
 } from '@mui/material';
 import { saveAs } from 'file-saver';
-import * as XLSX from 'xlsx';
+import * as XLSX from 'xlsx-js-style';
 
 export default function StudentDashboard() {
   const [dateSheets, setDateSheets] = useState([]);
