@@ -33,6 +33,16 @@ export default function StudentDashboard() {
   }, []);
 
   useEffect(() => {
+    const fetchDateSheets = async () => {
+      try {
+        const response = await fetch(`/api/datesheets?department=${selectedDepartment}&semester=${selectedSemester}`);
+        const data = await response.json();
+        setDateSheets(data);
+      } catch (error) {
+        console.error('Error fetching date sheets:', error);
+      }
+    };
+  
     if (selectedDepartment && selectedSemester) {
       fetchDateSheets();
     }

@@ -28,7 +28,7 @@ export default function About() {
         </p>
         <p className="text-lg text-gray-700 leading-relaxed mb-10">
           With our intuitive interface, you can effortlessly input exam dates, subjects, and time slots to create customized date sheets
-          tailored to your academic calendar. Whether you're a student, administrative staff, or faculty member, our tool is here to enhance
+          tailored to your academic calendar. Whether you are a student, administrative staff, or faculty member, our tool is here to enhance
           efficiency, reduce scheduling conflicts, and bring clarity to your academic planning.
         </p>
 

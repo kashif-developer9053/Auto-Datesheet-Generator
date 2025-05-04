@@ -48,7 +48,7 @@ export default function Contact() {
       <div className="py-16 px-5 max-w-7xl mx-auto text-center">
         <h1 className="font-serif text-5xl text-green-600 mb-8">Contact Us</h1>
         <p className="text-lg text-gray-600 leading-relaxed mb-10">
-          Have questions or need assistance? We're here to help! Reach out to us using the form below, or connect with us on social media. Your feedback and inquiries are important to us.
+          Have questions or need assistance? We are here to help! Reach out to us using the form below, or connect with us on social media. Your feedback and inquiries are important to us.
         </p>
 
         {/* Contact Form */}
