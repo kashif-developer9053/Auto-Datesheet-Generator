@@ -103,8 +103,8 @@ export default function ViewConflictReports({ session }) {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h5" gutterBottom>
-        Conflict Reports
+      <Typography variant="h5" color='black' gutterBottom>
+        Clash Reports
       </Typography>
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
