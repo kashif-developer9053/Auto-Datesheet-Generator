@@ -43,6 +43,10 @@ export default function AdminLayout({ children }) {
         { name: 'Batch Management', icon: Calendar, href: '/admin/batches' },
         { name: 'Room Management', icon: DoorOpen, href: '/admin/rooms' },
         { name: 'DateSheet Management', icon: FileText, href: '/admin/datesheets' },
+        { name: 'DateSheet Conflict', icon: FileText, href: '/admin/conflict' },
+        { name: 'Manual Datesheet', icon: FileText, href: '/admin/manualdatesheet' },
+
+
         { name: 'Settings', icon: Settings, href: '/admin/settings' },
       ];
 

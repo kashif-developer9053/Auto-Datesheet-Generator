@@ -19,11 +19,13 @@ import {
   Button,
   CircularProgress,
   Alert,
+  TextField,
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 import * as XLSX from 'xlsx-js-style';
 import { format } from 'date-fns';
 
@@ -32,10 +34,18 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
   const [loading, setLoading] = useState(false);
   const [viewDatesheet, setViewDatesheet] = useState(null);
   const [viewOpen, setViewOpen] = useState(false);
+  const [showReportForm, setShowReportForm] = useState(false);
+  const [reportForm, setReportForm] = useState({ title: '', description: '' });
+  const [reportError, setReportError] = useState('');
 
   useEffect(() => {
+    console.log('Session object:', JSON.stringify(session, null, 2));
+    if (!session?.user?.id) {
+      setError('User session is not authenticated. Please log in.');
+      return;
+    }
     fetchDatesheets();
-  }, [session]);
+  }, [session, setError]);
 
   const fetchDepartmentName = async (departmentId) => {
     if (!departmentId) return 'Unknown';
@@ -75,24 +85,41 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
     setLoading(true);
     setError('');
     try {
-      const response = await fetch('/api/datesheets');
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to fetch datesheets');
+      // Fetch both auto and manual datesheets
+      const [autoResponse, manualResponse] = await Promise.all([
+        fetch('/api/datesheets'),
+        fetch('/api/manual-datesheets'),
+      ]);
+
+      if (!autoResponse.ok) {
+        const errorData = await autoResponse.json();
+        throw new Error(errorData.error || 'Failed to fetch auto datesheets');
       }
-      const data = await response.json();
-      if (!Array.isArray(data)) {
+      if (!manualResponse.ok) {
+        const errorData = await manualResponse.json();
+        throw new Error(errorData.error || 'Failed to fetch manual datesheets');
+      }
+
+      const autoData = await autoResponse.json();
+      const manualData = await manualResponse.json();
+
+      if (!Array.isArray(autoData) || !Array.isArray(manualData)) {
         throw new Error('Invalid datesheet data received');
       }
-      console.log('Raw datesheets fetched:', JSON.stringify(data, null, 2));
 
-      let filteredData = data;
-      if (session.user.role === 'student' && session.user.department) {
-        filteredData = data.filter(ds => String(ds.departmentId) === String(session.user.department));
+      console.log('Raw auto datesheets:', JSON.stringify(autoData, null, 2));
+      console.log('Raw manual datesheets:', JSON.stringify(manualData, null, 2));
+
+      // Combine auto and manual datesheets
+      let combinedData = [...autoData, ...manualData];
+
+      // Filter by department for students
+      if (session?.user?.role === 'student' && session?.user?.department) {
+        combinedData = combinedData.filter(ds => String(ds.departmentId) === String(session.user.department));
       }
 
       const enrichedDatesheets = await Promise.all(
-        filteredData.map(async (datesheet) => {
+        combinedData.map(async (datesheet) => {
           const departmentName = await fetchDepartmentName(datesheet.departmentId);
           const schedulesWithBatchNames = await Promise.all(
             (datesheet.schedules || []).map(async (schedule) => {
@@ -116,6 +143,7 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
               examTimings: schedule.examTimings || [],
               schedule: schedule.schedule || [],
             })),
+            isManual: manualData.some(md => md._id.toString() === datesheet._id.toString()), // Flag for manual datesheets
           };
         })
       );
@@ -156,7 +184,7 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
     );
   };
 
-  const handleView = async (datesheet) => {
+  const handleView = async (datesheet, showForm = false) => {
     try {
       setLoading(true);
       setError('');
@@ -170,9 +198,76 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
       }
       setViewDatesheet(enrichedDatesheet);
       setViewOpen(true);
+      setShowReportForm(showForm);
+      if (showForm) {
+        setReportForm({ title: '', description: '' });
+        setReportError('');
+      }
     } catch (error) {
       console.error('Error fetching datesheet:', error);
       setError(`Failed to load datesheet details: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReportConflict = () => {
+    setShowReportForm(true);
+    setReportForm({ title: '', description: '' });
+    setReportError('');
+  };
+
+  const handleReportSubmit = async () => {
+    if (!reportForm.title.trim() || !reportForm.description.trim()) {
+      setReportError('Title and description are required.');
+      return;
+    }
+
+    if (!viewDatesheet?.originalId || !session?.user?.name) {
+      setReportError('Cannot submit report: Invalid datesheet or user session. Please log in and try again.');
+      console.error('Missing critical data:', {
+        datesheetId: viewDatesheet?.originalId,
+        userName: session?.user?.name,
+        session: JSON.stringify(session, null, 2),
+      });
+      return;
+    }
+
+    if (typeof session.user.name !== 'string' || session.user.name.trim() === '') {
+      setReportError('Invalid user name in session. Please contact support.');
+      console.error('Invalid session.user.name:', session.user.name);
+      return;
+    }
+
+    const requestBody = {
+      datesheetId: viewDatesheet.originalId,
+      title: reportForm.title,
+      description: reportForm.description,
+      reportedBy: session.user.name,
+      isManual: viewDatesheet.isManual, // Include isManual flag
+    };
+    console.log('Submitting conflict report with body:', JSON.stringify(requestBody, null, 2));
+
+    try {
+      setLoading(true);
+      setReportError('');
+      const response = await fetch('/api/conflict-reports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to submit conflict report');
+      }
+
+      setSuccess('Conflict report submitted successfully');
+      setShowReportForm(false);
+      setReportForm({ title: '', description: '' });
+    } catch (error) {
+      console.error('Error submitting conflict report:', error);
+      setReportError(`Failed to submit conflict report: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -195,11 +290,11 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
       ],
       [`Version Release: ${format(new Date(), 'dd MMMM yyyy')}`],
       [''],
-      ['Date (Day)', 'Time',  'Course', 'Instructor(s)', 'Batch', 'Room(s)'],
+      ['Date (Day)', 'Time', 'Course', 'Instructor(s)', 'Batch', 'Room(s)'],
     ];
 
     const dataRows = [];
-    groupedSchedule.forEach((group, groupIndex) => {
+    groupedSchedule.forEach((group) => {
       group.exams.forEach((exam, examIndex) => {
         dataRows.push([
           examIndex === 0 ? group.date : '',
@@ -215,7 +310,6 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
     const allRows = [...header, ...dataRows];
     const ws = XLSX.utils.aoa_to_sheet(allRows);
 
-    // Apply styles
     const range = XLSX.utils.decode_range(ws['!ref']);
     for (let R = 0; R <= range.e.r; ++R) {
       for (let C = 0; C <= range.e.c; ++C) {
@@ -248,11 +342,7 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
           ws[cellRef].s = {
             font: { name: 'Calibri', sz: 11 },
             alignment: { wrapText: true },
-            fill: {
-              fgColor: {
-                rgb: R % 2 === 0 ? 'F3F6FA' : 'FFFFFF',
-              },
-            },
+            fill: { fgColor: { rgb: R % 2 === 0 ? 'F3F6FA' : 'FFFFFF' } },
             border: {
               top: { style: 'thin', color: { rgb: 'AAAAAA' } },
               bottom: { style: 'thin', color: { rgb: 'AAAAAA' } },
@@ -308,7 +398,7 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
 
       if (!response.ok) {
         const errData = await response.json();
-        throw new Error(errData.error || 'PDF export failed');
+        throw new Error(errData.error || 'Failed to export PDF');
       }
 
       const blob = await response.blob();
@@ -334,7 +424,8 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
     try {
       setLoading(true);
       setError('');
-      const response = await fetch(`/api/datesheets?id=${datesheet.originalId}`, {
+      const endpoint = datesheet.isManual ? '/api/manual-datesheets' : '/api/datesheets';
+      const response = await fetch(`${endpoint}?id=${datesheet.originalId}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
@@ -351,6 +442,16 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
     }
   };
 
+  if (!session?.user?.id) {
+    return (
+      <Box sx={{ p: 3, textAlign: 'center' }}>
+        <Typography variant="h6" color="error">
+          Please log in to view datesheets or report conflicts.
+        </Typography>
+      </Box>
+    );
+  }
+
   return (
     <>
       <TableContainer component={Paper}>
@@ -360,19 +461,20 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
               <TableCell>Name</TableCell>
               <TableCell>Department</TableCell>
               <TableCell>Exam Period</TableCell>
+              <TableCell>Type</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={4} align="center">
+                <TableCell colSpan={5} align="center">
                   <CircularProgress />
                 </TableCell>
               </TableRow>
             ) : datesheets.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} align="center">
+                <TableCell colSpan={5} align="center">
                   No datesheets found
                 </TableCell>
               </TableRow>
@@ -382,6 +484,7 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
                   <TableCell>{datesheet.name || 'N/A'}</TableCell>
                   <TableCell>{datesheet.department?.name || 'N/A'}</TableCell>
                   <TableCell>{datesheet.examPeriod || 'N/A'}</TableCell>
+                  <TableCell>{datesheet.isManual ? 'Manual' : 'Auto'}</TableCell>
                   <TableCell>
                     <IconButton
                       onClick={() => handleView(datesheet)}
@@ -397,7 +500,13 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
                     >
                       <FileDownloadIcon />
                     </IconButton>
-                   
+                    <IconButton
+                      onClick={() => handleView(datesheet, true)}
+                      color="warning"
+                      title="Report Conflict"
+                    >
+                      <ReportProblemIcon />
+                    </IconButton>
                     {(session.user.role === 'admin' || session.user.role === 'faculty') && (
                       <IconButton
                         onClick={() => handleDelete(datesheet)}
@@ -443,6 +552,52 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
             <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
               <CircularProgress />
             </Box>
+          ) : showReportForm ? (
+            <Box sx={{ p: 3 }}>
+              <Typography variant="h6" gutterBottom>
+                Report a Conflict
+              </Typography>
+              {reportError && (
+                <Alert severity="error" sx={{ mb: 2 }}>
+                  {reportError}
+                </Alert>
+              )}
+              <TextField
+                label="Title"
+                fullWidth
+                value={reportForm.title}
+                onChange={(e) => setReportForm({ ...reportForm, title: e.target.value })}
+                margin="normal"
+                required
+                inputProps={{ maxLength: 100 }}
+              />
+              <TextField
+                label="Description"
+                fullWidth
+                multiline
+                rows={4}
+                value={reportForm.description}
+                onChange={(e) => setReportForm({ ...reportForm, description: e.target.value })}
+                margin="normal"
+                required
+                inputProps={{ maxLength: 1000 }}
+              />
+              <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                <Button
+                  onClick={() => setShowReportForm(false)}
+                  disabled={loading}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleReportSubmit}
+                  variant="contained"
+                  disabled={loading}
+                >
+                  Submit
+                </Button>
+              </Box>
+            </Box>
           ) : viewDatesheet?.groupedSchedule && viewDatesheet.groupedSchedule.length > 0 ? (
             <TableContainer component={Paper}>
               <Table>
@@ -458,27 +613,27 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {viewDatesheet.groupedSchedule.map((group, groupIndex) =>
+                  {viewDatesheet?.groupedSchedule.map((group, groupIndex) =>
                     group.exams.map((exam, examIndex) => (
                       <TableRow
                         key={`${groupIndex}-${examIndex}`}
                         sx={{
-                          backgroundColor: groupIndex % 2 === 0 ? '#f0f0f0' : '#ffe4e1',
+                          backgroundColor: groupIndex % 2 === 0 ? 'rgb(240, 240, 240)' : 'rgb(255, 228, 225)',
                           borderTop: examIndex === 0 ? '2px solid black' : 'none',
                         }}
                       >
                         {examIndex === 0 ? (
-                          <TableCell rowSpan={group.exams.length} sx={{ borderRight: '1px solid #ccc' }}>
+                          <TableCell rowSpan={group.exams.length} sx={{ borderRight: '1px solid rgb(204, 204, 204)' }}>
                             {group.date}
                           </TableCell>
                         ) : null}
                         {examIndex === 0 ? (
-                          <TableCell rowSpan={group.exams.length} sx={{ borderRight: '1px solid #ccc' }}>
+                          <TableCell rowSpan={group.exams.length} sx={{ borderRight: '1px solid rgb(204, 204, 204)' }}>
                             {group.time}
                           </TableCell>
                         ) : null}
                         {examIndex === 0 ? (
-                          <TableCell rowSpan={group.exams.length} sx={{ borderRight: '1px solid #ccc' }}>
+                          <TableCell rowSpan={group.exams.length} sx={{ borderRight: '1px solid rgb(204, 204, 204)' }}>
                             {group.semester}
                           </TableCell>
                         ) : null}
@@ -520,7 +675,23 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
               >
                 Export to Excel
               </Button>
-             
+              <Button
+                onClick={() => exportToPDF(viewDatesheet)}
+                startIcon={<PictureAsPdfIcon />}
+                variant="contained"
+                disabled={loading}
+              >
+                Export to PDF
+              </Button>
+              <Button
+                onClick={handleReportConflict}
+                startIcon={<ReportProblemIcon />}
+                variant="outlined"
+                color="warning"
+                disabled={loading}
+              >
+                Report Conflict
+              </Button>
             </>
           )}
         </DialogActions>
