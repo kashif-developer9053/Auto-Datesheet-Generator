@@ -47,15 +47,12 @@ export default function BatchManagement() {
 
   useEffect(() => {
     fetchDepartments();
-    // We'll only fetch batches when a department is selected
   }, []);
 
-  // Add this effect to fetch batches when department changes
   useEffect(() => {
     if (formData.department) {
       fetchBatchesByDepartment(formData.department);
     } else {
-      // Clear batches when no department is selected
       setBatches([]);
     }
   }, [formData.department]);
@@ -91,11 +88,9 @@ export default function BatchManagement() {
     }
   };
 
-  // Add a function to fetch all batches (for admins or if needed)
   const fetchAllBatches = async () => {
     try {
       setError('');
-      // Create an API endpoint that supports fetching all batches without a department filter
       const response = await fetch('/api/batches/all');
       if (!response.ok) {
         const errorData = await response.json();
@@ -117,7 +112,6 @@ export default function BatchManagement() {
       setError('');
       setSuccess('');
 
-      // Validate form data
       if (!formData.department || !formData.name || !formData.totalStudents) {
         setError('Please fill in all required fields');
         setLoading(false);
@@ -148,7 +142,6 @@ export default function BatchManagement() {
         name: '',
         totalStudents: '',
       });
-      // Refresh batches for the current department
       fetchBatchesByDepartment(formData.department);
     } catch (error) {
       console.error('Error creating batch:', error);
@@ -189,7 +182,6 @@ export default function BatchManagement() {
 
       setSuccess('Batch deleted successfully');
       
-      // Refresh the batches list
       if (formData.department) {
         fetchBatchesByDepartment(formData.department);
       }
@@ -209,35 +201,75 @@ export default function BatchManagement() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
+    <Container
+      maxWidth={false}
+      sx={{
+        px: { xs: 2, sm: 3, md: 4 },
+        py: { xs: 3, sm: 4 },
+        maxWidth: { sm: 'sm', md: 'md', lg: 'lg' },
+      }}
+    >
+      <Typography
+        variant="h4"
+        component="h1"
+        gutterBottom
+        color='black'
+        sx={{
+          fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
+          textAlign: { xs: 'center', sm: 'left' },
+        }}
+      >
         Batch Management
       </Typography>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
+        <Alert
+          severity="error"
+          sx={{
+            mb: 2,
+            fontSize: { xs: '0.875rem', sm: '1rem' },
+            px: { xs: 2, sm: 3 },
+          }}
+        >
           {error}
         </Alert>
       )}
 
       {success && (
-        <Alert severity="success" sx={{ mb: 2 }}>
+        <Alert
+          severity="success"
+          sx={{
+            mb: 2,
+            fontSize: { xs: '0.875rem', sm: '1rem' },
+            px: { xs: 2, sm: 3 },
+          }}
+        >
           {success}
         </Alert>
       )}
 
-      <Box component="form" onSubmit={handleSubmit} sx={{ mt: 4, mb: 4 }}>
-        <Grid container spacing={3}>
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{
+          mt: { xs: 2, sm: 3, md: 4 },
+          mb: { xs: 3, sm: 4 },
+        }}
+      >
+        <Grid container spacing={{ xs: 2, sm: 3 }}>
           <Grid item xs={12} sm={6}>
-            <FormControl fullWidth required>
-              <InputLabel>Department</InputLabel>
+            <FormControl fullWidth required size="small">
+              <InputLabel sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                Department
+              </InputLabel>
               <Select
                 name="department"
                 value={formData.department}
                 onChange={handleChange}
                 label="Department"
                 disabled={loading}
-              >
+                sx={{ fontSize: { xs: '0.875rem', sm: '1rem' ,  minWidth: 250 } }}
+                >
                 {departments.map((dept) => (
                   <MenuItem key={dept._id} value={dept._id}>
                     {dept.name}
@@ -255,7 +287,10 @@ export default function BatchManagement() {
               value={formData.name}
               onChange={handleChange}
               disabled={loading}
-            />
+              variant="outlined"
+              size="small"
+              sx={{ fontSize: { xs: '0.875rem', sm: '1rem' ,  minWidth: 250 } }}
+              />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
@@ -267,15 +302,24 @@ export default function BatchManagement() {
               value={formData.totalStudents}
               onChange={handleChange}
               disabled={loading}
-            />
+              variant="outlined"
+              size="small"
+              sx={{ fontSize: { xs: '0.875rem', sm: '1rem' ,  minWidth: 250 } }}
+              />
           </Grid>
           <Grid item xs={12}>
-            <Button 
-              type="submit" 
-              variant="contained" 
+            <Button
+              type="submit"
+              variant="contained"
               color="primary"
               disabled={loading}
               startIcon={loading ? <CircularProgress size={20} /> : null}
+              sx={{
+                fontSize: { xs: '0.875rem', sm: '1rem' },
+                py: { xs: 1, sm: 1.5 },
+                px: { xs: 2, sm: 3 },
+                width: { xs: '100%', sm: 'auto' },
+              }}
             >
               {loading ? 'Creating...' : 'Create Batch'}
             </Button>
@@ -283,43 +327,82 @@ export default function BatchManagement() {
         </Grid>
       </Box>
 
-      <Typography variant="h6" gutterBottom>
-        {formData.department 
-          ? `Batches for ${departments.find(d => d._id === formData.department)?.name || 'Selected Department'}`
+      <Typography
+        variant="h6"
+        gutterBottom
+        sx={{
+          fontSize: { xs: '1rem', sm: '1.25rem' },
+          mt: { xs: 2, sm: 3 },
+        }}
+      >
+        {formData.department
+          ? `Batches for ${departments.find((d) => d._id === formData.department)?.name || 'Selected Department'}`
           : 'Select a department to view batches'}
       </Typography>
 
-      <TableContainer component={Paper}>
-        <Table>
+      <TableContainer
+        component={Paper}
+        sx={{
+          mt: { xs: 2, sm: 3 },
+        }}
+      >
+        <Table
+          size="small"
+          sx={{
+            width: '100%',
+            tableLayout: 'auto',
+            '& th, & td': {
+              px: { xs: 0.5, sm: 1 },
+              py: { xs: 0.5, sm: 1 },
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            },
+          }}
+        >
           <TableHead>
             <TableRow>
-              <TableCell>Department</TableCell>
-              <TableCell>Batch Name</TableCell>
-              <TableCell>Total Students</TableCell>
-              <TableCell align="center">Actions</TableCell>
+              <TableCell sx={{ fontSize: { xs: '0.7rem', sm: '0.875rem' }, fontWeight: 'bold', width: '35%' }}>
+                Department
+              </TableCell>
+              <TableCell sx={{ fontSize: { xs: '0.7rem', sm: '0.875rem' }, fontWeight: 'bold', width: '35%' }}>
+                Batch Name
+              </TableCell>
+              <TableCell sx={{ fontSize: { xs: '0.7rem', sm: '0.875rem' }, fontWeight: 'bold', width: '15%' }}>
+                Students
+              </TableCell>
+              <TableCell sx={{ fontSize: { xs: '0.7rem', sm: '0.875rem' }, fontWeight: 'bold', width: '15%' }} align="center">
+                Actions
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {batches.length > 0 ? (
               batches.map((batch) => (
                 <TableRow key={batch._id}>
-                  <TableCell>{batch.department?.name || 'Unknown Department'}</TableCell>
-                  <TableCell>{batch.name}</TableCell>
-                  <TableCell>{batch.totalStudents}</TableCell>
+                  <TableCell sx={{ fontSize: { xs: '0.7rem', sm: '0.875rem' } }}>
+                    {batch.department?.name || 'Unknown Department'}
+                  </TableCell>
+                  <TableCell sx={{ fontSize: { xs: '0.7rem', sm: '0.875rem' } }}>
+                    {batch.name}
+                  </TableCell>
+                  <TableCell sx={{ fontSize: { xs: '0.7rem', sm: '0.875rem' } }}>
+                    {batch.totalStudents}
+                  </TableCell>
                   <TableCell align="center">
-                    <IconButton 
-                      color="error" 
+                    <IconButton
+                      color="error"
                       onClick={() => handleDeleteClick(batch)}
                       disabled={deleteLoading}
+                      sx={{ p: { xs: 0.5, sm: 1 } }}
                     >
-                      <DeleteIcon />
+                      <DeleteIcon fontSize="small" />
                     </IconButton>
                   </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={4} align="center">
+                <TableCell colSpan={4} align="center" sx={{ fontSize: { xs: '0.7rem', sm: '0.875rem' }, py: 2 }}>
                   {formData.department ? 'No batches found for this department' : 'Select a department to view batches'}
                 </TableCell>
               </TableRow>
@@ -328,26 +411,44 @@ export default function BatchManagement() {
         </Table>
       </TableContainer>
 
-      {/* Delete Confirmation Dialog */}
       <Dialog
         open={deleteDialogOpen}
         onClose={handleDeleteCancel}
+        fullWidth
+        maxWidth="sm"
+        sx={{
+          '& .MuiDialog-paper': {
+            width: { xs: '90%', sm: '500px' },
+            p: { xs: 2, sm: 3 },
+          },
+        }}
       >
-        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogTitle sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
+          Confirm Delete
+        </DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Are you sure you want to delete the batch {batchToDelete?.name} ? This action cannot be undone.
+          <DialogContentText sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+            Are you sure you want to delete the batch {batchToDelete?.name}? This action cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDeleteCancel} disabled={deleteLoading}>
+          <Button
+            onClick={handleDeleteCancel}
+            disabled={deleteLoading}
+            sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}
+          >
             Cancel
           </Button>
-          <Button 
-            onClick={handleDeleteConfirm} 
-            color="error" 
+          <Button
+            onClick={handleDeleteConfirm}
+            color="error"
             disabled={deleteLoading}
             startIcon={deleteLoading ? <CircularProgress size={20} /> : null}
+            sx={{
+              fontSize: { xs: '0.875rem', sm: '1rem' },
+              py: { xs: 1, sm: '1.5rem' },
+              px: { xs: 2, sm: 3 },
+            }}
           >
             {deleteLoading ? 'Deleting...' : 'Delete'}
           </Button>

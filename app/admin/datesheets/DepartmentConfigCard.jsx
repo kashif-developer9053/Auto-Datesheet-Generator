@@ -33,14 +33,14 @@ export default function DepartmentConfigCard({
   getDefaultTimeSlots,
 }) {
   return (
-    <Card sx={{ mb: 2 }}>
+    <Card sx={{ mb: 2 }} >
       <CardHeader
         action={
           <IconButton onClick={() => removeDepartmentSchedule(index)} color="error">
             <DeleteIcon />
           </IconButton>
         }
-        title={`Department Configuration ${index + 1}`}
+        title={`Department Configuration ${index + 1}`  }
       />
       <CardContent>
         <Grid container spacing={3}>

@@ -94,7 +94,7 @@ export default function ManualDatesheetPage() {
 
   return (
     <Box sx={{ p: 3, maxWidth: '1200px', mx: 'auto' }}>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" gutterBottom color='black'>
         Create Manual Datesheet
       </Typography>
       {error && (

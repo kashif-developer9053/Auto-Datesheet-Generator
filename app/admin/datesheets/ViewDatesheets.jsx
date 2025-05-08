@@ -85,7 +85,6 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
     setLoading(true);
     setError('');
     try {
-      // Fetch both auto and manual datesheets
       const [autoResponse, manualResponse] = await Promise.all([
         fetch('/api/datesheets'),
         fetch('/api/manual-datesheets'),
@@ -110,10 +109,8 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
       console.log('Raw auto datesheets:', JSON.stringify(autoData, null, 2));
       console.log('Raw manual datesheets:', JSON.stringify(manualData, null, 2));
 
-      // Combine auto and manual datesheets
       let combinedData = [...autoData, ...manualData];
 
-      // Filter by department for students
       if (session?.user?.role === 'student' && session?.user?.department) {
         combinedData = combinedData.filter(ds => String(ds.departmentId) === String(session.user.department));
       }
@@ -143,7 +140,7 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
               examTimings: schedule.examTimings || [],
               schedule: schedule.schedule || [],
             })),
-            isManual: manualData.some(md => md._id.toString() === datesheet._id.toString()), // Flag for manual datesheets
+            isManual: manualData.some(md => md._id.toString() === datesheet._id.toString()),
           };
         })
       );
@@ -244,7 +241,7 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
       title: reportForm.title,
       description: reportForm.description,
       reportedBy: session.user.name,
-      isManual: viewDatesheet.isManual, // Include isManual flag
+      isManual: viewDatesheet.isManual,
     };
     console.log('Submitting conflict report with body:', JSON.stringify(requestBody, null, 2));
 
@@ -444,8 +441,12 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
 
   if (!session?.user?.id) {
     return (
-      <Box sx={{ p: 3, textAlign: 'center' }}>
-        <Typography variant="h6" color="error">
+      <Box sx={{ p: { xs: 2, sm: 3 }, textAlign: 'center' }}>
+        <Typography
+          variant="h6"
+          color="error"
+          sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}
+        >
           Please log in to view datesheets or report conflicts.
         </Typography>
       </Box>
@@ -454,8 +455,19 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
 
   return (
     <>
-      <TableContainer component={Paper}>
-        <Table>
+      <TableContainer component={Paper} sx={{ overflowX: { xs: 'auto', sm: 'visible' } }}>
+        <Table
+          sx={{
+            minWidth: { xs: 650, sm: 'auto' },
+            '& th, & td': {
+              fontSize: { xs: '0.875rem', sm: '1rem' },
+              px: { xs: 1, sm: 2 },
+              py: { xs: 0.5, sm: 1 },
+              whiteSpace: { xs: 'normal', sm: 'nowrap' },
+              wordWrap: { xs: 'break-word', sm: 'normal' },
+            },
+          }}
+        >
           <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
@@ -469,7 +481,7 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
             {loading ? (
               <TableRow>
                 <TableCell colSpan={5} align="center">
-                  <CircularProgress />
+                  <CircularProgress size={24} />
                 </TableCell>
               </TableRow>
             ) : datesheets.length === 0 ? (
@@ -490,30 +502,34 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
                       onClick={() => handleView(datesheet)}
                       color="primary"
                       title="View Datesheet"
+                      sx={{ p: { xs: 1.5, sm: 1 } }}
                     >
-                      <VisibilityIcon />
+                      <VisibilityIcon fontSize="small" />
                     </IconButton>
                     <IconButton
                       onClick={() => exportToExcel(datesheet)}
                       color="primary"
                       title="Export to Excel"
+                      sx={{ p: { xs: 1.5, sm: 1 } }}
                     >
-                      <FileDownloadIcon />
+                      <FileDownloadIcon fontSize="small" />
                     </IconButton>
                     <IconButton
                       onClick={() => handleView(datesheet, true)}
                       color="warning"
                       title="Report Conflict"
+                      sx={{ p: { xs: 1.5, sm: 1 } }}
                     >
-                      <ReportProblemIcon />
+                      <ReportProblemIcon fontSize="small" />
                     </IconButton>
                     {(session.user.role === 'admin' || session.user.role === 'faculty') && (
                       <IconButton
                         onClick={() => handleDelete(datesheet)}
                         color="error"
                         title="Delete Datesheet"
+                        sx={{ p: { xs: 1.5, sm: 1 } }}
                       >
-                        <DeleteIcon />
+                        <DeleteIcon fontSize="small" />
                       </IconButton>
                     )}
                   </TableCell>
@@ -524,15 +540,43 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
         </Table>
       </TableContainer>
 
-      <Dialog open={viewOpen} onClose={() => setViewOpen(false)} maxWidth="lg" fullWidth>
+      <Dialog
+        open={viewOpen}
+        onClose={() => setViewOpen(false)}
+        maxWidth="lg"
+        fullWidth
+        sx={{
+          '& .MuiDialog-paper': {
+            width: { xs: '95%', sm: 'auto' },
+            maxHeight: { xs: '90vh', sm: 'auto' },
+          },
+        }}
+      >
         <DialogTitle>
           <Box sx={{ textAlign: 'center', mb: 2 }}>
-            <Typography variant="h5">INTERNATIONAL ISLAMIC UNIVERSITY</Typography>
-            <Typography variant="h6">{viewDatesheet?.department?.name?.toUpperCase() || 'DEPARTMENT'}</Typography>
-            <Typography variant="subtitle1">
-              {viewDatesheet?.examPeriod?.toUpperCase() || 'N/A'} DATESHEET {viewDatesheet?.academicYear || 'N/A'}
+            <Typography
+              variant="h5"
+              sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }}
+            >
+              INTERNATIONAL ISLAMIC UNIVERSITY
             </Typography>
-            <Typography variant="subtitle2" sx={{ mt: 1 }}>
+            <Typography
+              variant="h6"
+              sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}
+            >
+              {viewDatesheet?.department?.name?.toUpperCase() || 'DEPARTMENT'}
+            </Typography>
+            <Typography
+              variant="subtitle1"
+              sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}
+            >
+              {viewDatesheet?.examPeriod?.toUpperCase() || 'N/A'} DATESHEET{' '}
+              {viewDatesheet?.academicYear || 'N/A'}
+            </Typography>
+            <Typography
+              variant="subtitle2"
+              sx={{ mt: 1, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
+            >
               Duration:{' '}
               {viewDatesheet?.startDate
                 ? format(new Date(viewDatesheet.startDate), 'dd/MM/yyyy')
@@ -542,23 +586,33 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
                 ? format(new Date(viewDatesheet.endDate), 'dd/MM/yyyy')
                 : 'N/A'}
             </Typography>
-            <Typography variant="subtitle2" sx={{ mt: 1 }}>
+            <Typography
+              variant="subtitle2"
+              sx={{ mt: 1, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
+            >
               Version Release Date: {format(new Date(), 'dd MMMM yyyy')}
             </Typography>
           </Box>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ p: { xs: 2, sm: 3 } }}>
           {loading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
-              <CircularProgress />
+              <CircularProgress size={24} />
             </Box>
           ) : showReportForm ? (
-            <Box sx={{ p: 3 }}>
-              <Typography variant="h6" gutterBottom>
+            <Box sx={{ p: { xs: 2, sm: 3 } }}>
+              <Typography
+                variant="h6"
+                gutterBottom
+                sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }}
+              >
                 Report a Conflict
               </Typography>
               {reportError && (
-                <Alert severity="error" sx={{ mb: 2 }}>
+                <Alert
+                  severity="error"
+                  sx={{ mb: 2, fontSize: { xs: '0.875rem', sm: '1rem' } }}
+                >
                   {reportError}
                 </Alert>
               )}
@@ -570,6 +624,14 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
                 margin="normal"
                 required
                 inputProps={{ maxLength: 100 }}
+                sx={{
+                  '& .MuiInputBase-input': {
+                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                  },
+                  '& .MuiInputLabel-root': {
+                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                  },
+                }}
               />
               <TextField
                 label="Description"
@@ -581,11 +643,32 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
                 margin="normal"
                 required
                 inputProps={{ maxLength: 1000 }}
+                sx={{
+                  '& .MuiInputBase-input': {
+                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                  },
+                  '& .MuiInputLabel-root': {
+                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                  },
+                }}
               />
-              <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+              <Box
+                sx={{
+                  mt: 2,
+                  display: 'flex',
+                  flexDirection: { xs: 'column', sm: 'row' },
+                  justifyContent: 'flex-end',
+                  gap: 1,
+                }}
+              >
                 <Button
                   onClick={() => setShowReportForm(false)}
                   disabled={loading}
+                  sx={{
+                    width: { xs: '100%', sm: 'auto' },
+                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                    py: { xs: 1, sm: 0.5 },
+                  }}
                 >
                   Cancel
                 </Button>
@@ -593,18 +676,44 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
                   onClick={handleReportSubmit}
                   variant="contained"
                   disabled={loading}
+                  sx={{
+                    width: { xs: '100%', sm: 'auto' },
+                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                    py: { xs: 1, sm: 0.5 },
+                  }}
                 >
                   Submit
                 </Button>
               </Box>
             </Box>
           ) : viewDatesheet?.groupedSchedule && viewDatesheet.groupedSchedule.length > 0 ? (
-            <TableContainer component={Paper}>
-              <Table>
+            <TableContainer
+              component={Paper}
+              sx={{
+                overflowX: { xs: 'auto', sm: 'visible' },
+                maxHeight: { xs: '60vh', sm: 'none' },
+              }}
+            >
+              <Table
+                sx={{
+                  minWidth: { xs: 650, sm: 'auto' },
+                  '& th, & td': {
+                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                    px: { xs: 1, sm: 2 },
+                    py: { xs: 0.5, sm: 1 },
+                    whiteSpace: { xs: 'normal', sm: 'nowrap' },
+                    wordWrap: { xs: 'break-word', sm: 'normal' },
+                  },
+                }}
+              >
                 <TableHead>
                   <TableRow sx={{ backgroundColor: '#d3d3d3' }}>
-                    <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>Date (Day)</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>Time</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', whiteSpace: { xs: 'normal', sm: 'nowrap' } }}>
+                      Date (Day)
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', whiteSpace: { xs: 'normal', sm: 'nowrap' } }}>
+                      Time
+                    </TableCell>
                     <TableCell sx={{ fontWeight: 'bold' }}>Semester</TableCell>
                     <TableCell sx={{ fontWeight: 'bold' }}>Course</TableCell>
                     <TableCell sx={{ fontWeight: 'bold' }}>Instructor</TableCell>
@@ -623,30 +732,45 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
                         }}
                       >
                         {examIndex === 0 ? (
-                          <TableCell rowSpan={group.exams.length} sx={{ borderRight: '1px solid rgb(204, 204, 204)' }}>
+                          <TableCell
+                            rowSpan={group.exams.length}
+                            sx={{ borderRight: '1px solid rgb(204, 204, 204)' }}
+                          >
                             {group.date}
                           </TableCell>
                         ) : null}
                         {examIndex === 0 ? (
-                          <TableCell rowSpan={group.exams.length} sx={{ borderRight: '1px solid rgb(204, 204, 204)' }}>
+                          <TableCell
+                            rowSpan={group.exams.length}
+                            sx={{ borderRight: '1px solid rgb(204, 204, 204)' }}
+                          >
                             {group.time}
                           </TableCell>
                         ) : null}
                         {examIndex === 0 ? (
-                          <TableCell rowSpan={group.exams.length} sx={{ borderRight: '1px solid rgb(204, 204, 204)' }}>
+                          <TableCell
+                            rowSpan={group.exams.length}
+                            sx={{ borderRight: '1px solid rgb(204, 204, 204)' }}
+                          >
                             {group.semester}
                           </TableCell>
                         ) : null}
-                        <TableCell>{`${exam.courseCode || ''} ${exam.courseName || 'Unknown'}`}</TableCell>
+                        <TableCell>
+                          {`${exam.courseCode || ''} ${exam.courseName || 'Unknown'}`}
+                        </TableCell>
                         <TableCell>
                           {exam.roomAssignments?.length
-                            ? exam.roomAssignments.map((r) => r.facultyName || 'Unknown').join(', ')
+                            ? exam.roomAssignments
+                                .map((r) => r.facultyName || 'Unknown')
+                                .join(', ')
                             : 'TBD'}
                         </TableCell>
                         <TableCell>{group.batchName || 'Unknown'}</TableCell>
                         <TableCell>
                           {exam.roomAssignments?.length
-                            ? exam.roomAssignments.map((r) => r.roomName || 'Unknown').join(', ')
+                            ? exam.roomAssignments
+                                .map((r) => r.roomName || 'Unknown')
+                                .join(', ')
                             : 'TBD'}
                         </TableCell>
                       </TableRow>
@@ -656,44 +780,80 @@ export default function ViewDatesheets({ session, setError, setSuccess, fetchBat
               </Table>
             </TableContainer>
           ) : (
-            <Box sx={{ textAlign: 'center', p: 3 }}>
-              <Typography variant="body1" color="text.secondary">
+            <Box sx={{ textAlign: 'center', p: { xs: 2, sm: 3 } }}>
+              <Typography
+                variant="body1"
+                color="text.secondary"
+                sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}
+              >
                 No schedule data available for this datesheet.
               </Typography>
             </Box>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setViewOpen(false)}>Close</Button>
-          {viewDatesheet?.schedules && viewDatesheet.schedules.some(s => s.schedule && s.schedule.length > 0) && (
-            <>
-              <Button
-                onClick={() => exportToExcel(viewDatesheet)}
-                startIcon={<FileDownloadIcon />}
-                variant="contained"
-                disabled={loading}
-              >
-                Export to Excel
-              </Button>
-              <Button
-                onClick={() => exportToPDF(viewDatesheet)}
-                startIcon={<PictureAsPdfIcon />}
-                variant="contained"
-                disabled={loading}
-              >
-                Export to PDF
-              </Button>
-              <Button
-                onClick={handleReportConflict}
-                startIcon={<ReportProblemIcon />}
-                variant="outlined"
-                color="warning"
-                disabled={loading}
-              >
-                Report Conflict
-              </Button>
-            </>
-          )}
+        <DialogActions
+          sx={{
+            p: { xs: 2, sm: 3 },
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: { xs: 1, sm: 0 },
+          }}
+        >
+          <Button
+            onClick={() => setViewOpen(false)}
+            sx={{
+              width: { xs: '100%', sm: 'auto' },
+              fontSize: { xs: '0.875rem', sm: '1rem' },
+              py: { xs: 1, sm: 0.5 },
+            }}
+          >
+            Close
+          </Button>
+          {viewDatesheet?.schedules &&
+            viewDatesheet.schedules.some((s) => s.schedule && s.schedule.length > 0) && (
+              <>
+                <Button
+                  onClick={() => exportToExcel(viewDatesheet)}
+                  startIcon={<FileDownloadIcon />}
+                  variant="contained"
+                  disabled={loading}
+                  sx={{
+                    width: { xs: '100%', sm: 'auto' },
+                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                    py: { xs: 1, sm: 0.5 },
+                  }}
+                >
+                  Export to Excel
+                </Button>
+                <Button
+                  onClick={() => exportToPDF(viewDatesheet)}
+                  startIcon={<PictureAsPdfIcon />}
+                  variant="contained"
+                  disabled={loading}
+                  sx={{
+                    width: { xs: '100%', sm: 'auto' },
+                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                    py: { xs: 1, sm: 0.5 },
+                  }}
+                >
+                  Export to PDF
+                </Button>
+                <Button
+                  onClick={handleReportConflict}
+                  startIcon={<ReportProblemIcon />}
+                  variant="outlined"
+                  color="warning"
+                  disabled={loading}
+                  sx={{
+                    width: { xs: '100%', sm: 'auto' },
+                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                    py: { xs: 1, sm: 0.5 },
+                  }}
+                >
+                  Report Conflict
+                </Button>
+              </>
+            )}
         </DialogActions>
       </Dialog>
     </>

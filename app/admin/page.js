@@ -102,12 +102,12 @@ export default function AdminDashboard({ role }) {
   }, [role]);
 
   return (
-    <div className="p-8  min-h-screen">
+    <div className="p-4 sm:p-6 lg:p-8 min-h-screen">
       <motion.h1
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="text-4xl font-extrabold text-gray-900 mb-10 text-center bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-600"
+        className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-900 mb-6 sm:mb-8 lg:mb-10 text-center bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-600"
       >
         Upcoming Exam Datesheets
       </motion.h1>
@@ -116,7 +116,7 @@ export default function AdminDashboard({ role }) {
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="text-green-700 text-center text-lg animate-pulse"
+          className="text-green-700 text-center text-base sm:text-lg animate-pulse"
         >
           Loading...
         </motion.p>
@@ -124,12 +124,12 @@ export default function AdminDashboard({ role }) {
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="text-green-700 text-center text-lg"
+          className="text-green-700 text-center text-base sm:text-lg"
         >
           No upcoming datesheets found.
         </motion.p>
       ) : (
-        <div className="space-y-6 max-w-5xl mx-auto">
+        <div className="space-y-4 sm:space-y-6 max-w-full sm:max-w-3xl lg:max-w-5xl mx-auto">
           <AnimatePresence>
             {datesheets.map((ds, index) => {
               const { text: countdownText, urgent } = getCountdown(ds.startDate);
@@ -141,26 +141,26 @@ export default function AdminDashboard({ role }) {
                   exit={{ opacity: 0, y: -30 }}
                   transition={{ duration: 0.6, delay: index * 0.15, type: 'spring', bounce: 0.3 }}
                   whileHover={{ scale: 1.03, boxShadow: '0 12px 24px rgba(0, 0, 0, 0.15)' }}
-                  className="relative bg-white bg-opacity-70 backdrop-blur-lg p-6 rounded-2xl shadow-xl border border-green-200 overflow-hidden"
+                  className="relative bg-white bg-opacity-70 backdrop-blur-lg p-4 sm:p-6 rounded-2xl shadow-xl border border-green-200 overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-green-50 to-lime-50 opacity-40" />
-                  <div className="relative flex items-center justify-between">
-                    <div className="flex items-center">
+                  <div className="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center w-full sm:w-auto">
                       <motion.div
-                        className="p-3 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl"
+                        className="p-2 sm:p-3 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl"
                         whileHover={{ rotate: 360 }}
                         transition={{ duration: 0.5 }}
                       >
-                        <Calendar className="w-7 h-7 text-white" />
+                        <Calendar className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
                       </motion.div>
-                      <div className="ml-5">
-                        <p className="text-2xl font-bold text-gray-900">
+                      <div className="ml-0 sm:ml-5 mt-4 sm:mt-0 w-full">
+                        <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">
                           {ds.name.split(' - Department')[0]} - {ds.departmentName}
                         </p>
-                        <p className="text-sm text-green-600 font-medium">
+                        <p className="text-xs sm:text-sm text-green-600 font-medium">
                           {ds.examPeriod} Exam - {ds.academicYear}
                         </p>
-                        <p className="text-sm text-green-600">
+                        <p className="text-xs sm:text-sm text-green-600">
                           {new Date(ds.startDate).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'long',
@@ -168,14 +168,14 @@ export default function AdminDashboard({ role }) {
                           })}
                         </p>
                         <motion.p
-                          className={`text-sm font-semibold flex items-center mt-2 ${
+                          className={`text-xs sm:text-sm font-semibold flex items-center mt-2 ${
                             urgent ? 'text-red-600' : 'text-emerald-600'
                           }`}
                           animate={urgent ? { scale: [1, 1.1, 1] } : {}}
                           transition={urgent ? { repeat: Infinity, duration: 1.5 } : {}}
                         >
-                          <Clock className="w-5 h-5 mr-2" />
-                          <span className="px-3 py-1 bg-gradient-to-r from-green-100 to-lime-100 rounded-full">
+                          <Clock className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                          <span className="px-2 sm:px-3 py-1 bg-gradient-to-r from-green-100 to-lime-100 rounded-full">
                             {countdownText}
                           </span>
                         </motion.p>
@@ -183,10 +183,10 @@ export default function AdminDashboard({ role }) {
                     </div>
                     <Link
                       href={`/admin/datesheets`}
-                      className="flex items-center bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300"
+                      className="flex items-center bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 w-full sm:w-auto text-center"
                     >
                       View Details
-                      <ChevronRight className="w-5 h-5 ml-2" />
+                      <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
                     </Link>
                   </div>
                 </motion.div>

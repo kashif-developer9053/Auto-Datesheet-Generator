@@ -122,28 +122,68 @@ export default function DepartmentManagement() {
   };
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom>
+    <Box sx={{ px: { xs: 2, sm: 3, md: 4 }, py: { xs: 2, sm: 3 }, maxWidth: { sm: 'sm', md: 'md', lg: 'lg' }, mx: 'auto' }}>
+      <Typography
+        variant="h4"
+        gutterBottom color='black'
+        sx={{
+          fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
+          textAlign: { xs: 'center', sm: 'left' },
+        }}
+      >
         Department Management
       </Typography>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
+        <Alert
+          severity="error"
+          sx={{
+            mb: 2,
+            fontSize: { xs: '0.875rem', sm: '1rem' },
+            px: { xs: 2, sm: 3 },
+          }}
+        >
           {error}
         </Alert>
       )}
 
       {success && (
-        <Alert severity="success" sx={{ mb: 2 }}>
+        <Alert
+          severity="success"
+          sx={{
+            mb: 2,
+            fontSize: { xs: '0.875rem', sm: '1rem' },
+            px: { xs: 2, sm: 3 },
+          }}
+        >
           {success}
         </Alert>
       )}
 
-      <Paper sx={{ p: 3, mb: 3 }}>
-        <Typography variant="h6" gutterBottom>
+      <Paper
+        sx={{
+          p: { xs: 2, sm: 3 },
+          mb: { xs: 2, sm: 3 },
+        }}
+      >
+        <Typography
+          variant="h6"
+          gutterBottom
+          sx={{
+            fontSize: { xs: '1rem', sm: '1.25rem' },
+          }}
+        >
           {editingDepartment ? 'Edit Department' : 'Add New Department'}
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', gap: 2 }}>
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: { xs: 2, sm: 2 },
+          }}
+        >
           <TextField
             label="Department Name"
             name="name"
@@ -151,6 +191,7 @@ export default function DepartmentManagement() {
             onChange={handleInputChange}
             required
             fullWidth
+            sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}
           />
           <TextField
             label="Department Code"
@@ -159,38 +200,68 @@ export default function DepartmentManagement() {
             onChange={handleInputChange}
             required
             fullWidth
+            sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}
           />
           <Button
             type="submit"
             variant="contained"
             color="primary"
-            sx={{ minWidth: '120px' }}
+            sx={{
+              minWidth: { xs: '100%', sm: '120px' },
+              fontSize: { xs: '0.875rem', sm: '1rem' },
+              py: { xs: 1, sm: 1.5 },
+              px: { xs: 2, sm: 3 },
+            }}
           >
             {editingDepartment ? 'Update' : 'Add'}
           </Button>
         </Box>
       </Paper>
 
-      <TableContainer component={Paper}>
-        <Table>
+      <TableContainer
+        component={Paper}
+        sx={{
+          overflowX: 'auto',
+          mt: { xs: 2, sm: 3 },
+        }}
+      >
+        <Table sx={{ minWidth: { xs: 500, sm: 600 } }}>
           <TableHead>
             <TableRow>
-              <TableCell>Department Name</TableCell>
-              <TableCell>Department Code</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, fontWeight: 'bold' }}>
+                Department Name
+              </TableCell>
+              <TableCell sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, fontWeight: 'bold' }}>
+                Department Code
+              </TableCell>
+              <TableCell sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, fontWeight: 'bold' }}>
+                Actions
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {departments.map((department) => (
               <TableRow key={department._id}>
-                <TableCell>{department.name}</TableCell>
-                <TableCell>{department.code}</TableCell>
+                <TableCell sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+                  {department.name}
+                </TableCell>
+                <TableCell sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+                  {department.code}
+                </TableCell>
                 <TableCell>
-                  <IconButton onClick={() => handleEdit(department)} color="primary">
-                    <EditIcon />
+                  <IconButton
+                    onClick={() => handleEdit(department)}
+                    color="primary"
+                    sx={{ p: { xs: 0.5, sm: 1 } }}
+                  >
+                    <EditIcon fontSize="small" />
                   </IconButton>
-                  <IconButton onClick={() => handleDelete(department._id)} color="error">
-                    <DeleteIcon />
+                  <IconButton
+                    onClick={() => handleDelete(department._id)}
+                    color="error"
+                    sx={{ p: { xs: 0.5, sm: 1 } }}
+                  >
+                    <DeleteIcon fontSize="small" />
                   </IconButton>
                 </TableCell>
               </TableRow>
@@ -199,10 +270,23 @@ export default function DepartmentManagement() {
         </Table>
       </TableContainer>
 
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>Edit Department</DialogTitle>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        fullWidth
+        maxWidth="sm"
+        sx={{
+          '& .MuiDialog-paper': {
+            width: { xs: '90%', sm: '500px' },
+            p: { xs: 2, sm: 3 },
+          },
+        }}
+      >
+        <DialogTitle sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
+          Edit Department
+        </DialogTitle>
         <DialogContent>
-          <Box component="form" sx={{ mt: 2 }}>
+          <Box component="form" sx={{ mt: { xs: 1, sm: 2 } }}>
             <TextField
               label="Department Name"
               name="name"
@@ -210,7 +294,10 @@ export default function DepartmentManagement() {
               onChange={handleInputChange}
               required
               fullWidth
-              sx={{ mb: 2 }}
+              sx={{
+                mb: { xs: 2, sm: 2 },
+                fontSize: { xs: '0.875rem', sm: '1rem' },
+              }}
             />
             <TextField
               label="Department Code"
@@ -219,16 +306,31 @@ export default function DepartmentManagement() {
               onChange={handleInputChange}
               required
               fullWidth
+              sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}
             />
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button onClick={handleSubmit} variant="contained" color="primary">
+          <Button
+            onClick={handleCloseDialog}
+            sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            color="primary"
+            sx={{
+              fontSize: { xs: '0.875rem', sm: '1rem' },
+              py: { xs: 1, sm: 1.5 },
+              px: { xs: 2, sm: 3 },
+            }}
+          >
             Update
           </Button>
         </DialogActions>
       </Dialog>
     </Box>
   );
-} 
+}

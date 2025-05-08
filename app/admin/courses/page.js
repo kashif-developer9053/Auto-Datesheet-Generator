@@ -217,34 +217,66 @@ export default function CourseManagement() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
+    <Container
+      maxWidth={false}
+      sx={{
+        px: { xs: 2, sm: 3, md: 4 },
+        py: { xs: 3, sm: 4 },
+        maxWidth: { sm: 'sm', md: 'md', lg: 'lg' },
+      }}
+    >
+      <Typography
+        variant="h4"
+        component="h1"
+        gutterBottom
+        color='black'
+        sx={{
+          fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
+          textAlign: { xs: 'center', sm: 'left' },
+        }}
+      >
         Course Management
       </Typography>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
+        <Alert
+          severity="error"
+          sx={{
+            mb: 2,
+            fontSize: { xs: '0.875rem', sm: '1rem' },
+            px: { xs: 2, sm: 3 },
+          }}
+        >
           {error}
         </Alert>
       )}
 
       {success && (
-        <Alert severity="success" sx={{ mb: 2 }}>
+        <Alert
+          severity="success"
+          sx={{
+            mb: 2,
+            fontSize: { xs: '0.875rem', sm: '1rem' },
+            px: { xs: 2, sm: 3 },
+          }}
+        >
           {success}
         </Alert>
       )}
 
-      <Grid container spacing={3}>
+      <Grid container spacing={{ xs: 2, sm: 3 }}>
         <Grid item xs={12} md={6}>
           <Card elevation={3}>
-            <CardHeader 
-              title={isEditing ? "Edit Course" : "Add New Course"} 
+            <CardHeader
+              title={isEditing ? 'Edit Course' : 'Add New Course'}
               subheader="Fill in the course details below"
+              titleTypographyProps={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}
+              subheaderTypographyProps={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
             />
             <Divider />
-            <CardContent>
-              <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-                <Grid container spacing={2}>
+            <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+              <Box component="form" onSubmit={handleSubmit} sx={{ mt: { xs: 1, sm: 2 } }}>
+                <Grid container spacing={{ xs: 1.5, sm: 2 }}>
                   <Grid item xs={12} sm={6}>
                     <TextField
                       required
@@ -256,7 +288,8 @@ export default function CourseManagement() {
                       disabled={loading}
                       variant="outlined"
                       size="small"
-                    />
+                      sx={{ fontSize: { xs: '0.875rem', sm: '1rem' ,  minWidth: 250 } }}
+                      />
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <TextField
@@ -269,17 +302,21 @@ export default function CourseManagement() {
                       disabled={loading}
                       variant="outlined"
                       size="small"
-                    />
+                      sx={{ fontSize: { xs: '0.875rem', sm: '1rem' ,  minWidth: 250 } }}
+                      />
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <FormControl fullWidth required size="small">
-                      <InputLabel>Department</InputLabel>
+                      <InputLabel sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                        Department
+                      </InputLabel>
                       <Select
                         name="department"
                         value={formData.department}
                         onChange={handleChange}
                         label="Department"
                         disabled={loading}
+                        sx={{ fontSize: { xs: '0.875rem', sm: '1rem' ,  minWidth: 250 } }}
                       >
                         {departments.map((dept) => (
                           <MenuItem key={dept._id} value={dept._id}>
@@ -301,17 +338,21 @@ export default function CourseManagement() {
                       disabled={loading}
                       variant="outlined"
                       size="small"
-                    />
+                      sx={{ fontSize: { xs: '0.875rem', sm: '1rem' ,  minWidth: 250 } }}
+                      />
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    <FormControl fullWidth required size="small">
-                      <InputLabel>Faculty</InputLabel>
+                    <FormControl fullWidth required size="small" >
+                      <InputLabel sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                        Faculty
+                      </InputLabel>
                       <Select
                         name="faculty"
                         value={formData.faculty}
                         onChange={handleChange}
                         label="Faculty"
                         disabled={loading}
+                        sx={{ fontSize: { xs: '0.875rem', sm: '1rem' ,  minWidth: 250 } }}
                       >
                         {faculty.map((f) => (
                           <MenuItem key={f._id} value={f._id}>
@@ -332,7 +373,8 @@ export default function CourseManagement() {
                       disabled={loading}
                       variant="outlined"
                       size="small"
-                    />
+                      sx={{ fontSize: { xs: '0.875rem', sm: '1rem' ,  minWidth: 250 } }}
+                      />
                   </Grid>
                   <Grid item xs={12}>
                     <TextField
@@ -346,25 +388,38 @@ export default function CourseManagement() {
                       size="small"
                       multiline
                       rows={3}
-                    />
+                      sx={{ fontSize: { xs: '0.875rem', sm: '1rem' ,  minWidth: 250 } }}
+                      />
                   </Grid>
                   <Grid item xs={12}>
                     <Box sx={{ display: 'flex', gap: 2 }}>
-                      <Button 
-                        type="submit" 
-                        variant="contained" 
+                      <Button
+                        type="submit"
+                        variant="contained"
                         color="primary"
                         disabled={loading}
                         startIcon={loading ? <CircularProgress size={20} /> : <AddIcon />}
+                        sx={{
+                          fontSize: { xs: '0.875rem', sm: '1rem' },
+                          py: { xs: 1, sm: 1.5 },
+                          px: { xs: 2, sm: 3 },
+                          width: { xs: '100%', sm: 'auto' },
+                        }}
                       >
                         {loading ? 'Processing...' : (isEditing ? 'Update Course' : 'Add Course')}
                       </Button>
                       {isEditing && (
-                        <Button 
-                          variant="outlined" 
+                        <Button
+                          variant="outlined"
                           color="secondary"
                           onClick={resetForm}
                           disabled={loading}
+                          sx={{
+                            fontSize: { xs: '0.875rem', sm: '1rem' },
+                            py: { xs: 1, sm: 1.5 },
+                            px: { xs: 2, sm: 3 },
+                            width: { xs: '100%', sm: 'auto' },
+                          }}
                         >
                           Cancel
                         </Button>
@@ -379,45 +434,82 @@ export default function CourseManagement() {
 
         <Grid item xs={12} md={6}>
           <Card elevation={3}>
-            <CardHeader 
-              title="Course List" 
+            <CardHeader
+              title="Course List"
               subheader="All available courses"
+              titleTypographyProps={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}
+              subheaderTypographyProps={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
             />
             <Divider />
-            <CardContent>
-              <TableContainer>
-                <Table size="small">
+            <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+              <TableContainer
+                component={Paper}
+                sx={{
+                  overflowX: 'auto',
+                  maxHeight: 400,
+                }}
+              >
+                <Table
+                  size="small"
+                  sx={{
+                    minWidth: { xs: 600, sm: 650 },
+                    '& th, & td': {
+                      px: { xs: 1, sm: 2 },
+                      py: { xs: 0.5, sm: 1 },
+                    },
+                  }}
+                >
                   <TableHead>
                     <TableRow>
-                      <TableCell>Code</TableCell>
-                      <TableCell>Name</TableCell>
-                      <TableCell>Department</TableCell>
-                      <TableCell>Semester</TableCell>
-                      <TableCell align="right">Actions</TableCell>
+                      <TableCell sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, fontWeight: 'bold', width: '20%' }}>
+                        Code
+                      </TableCell>
+                      <TableCell sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, fontWeight: 'bold', width: '30%' }}>
+                        Name
+                      </TableCell>
+                      <TableCell sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, fontWeight: 'bold', width: '30%' }}>
+                        Department
+                      </TableCell>
+                      <TableCell sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, fontWeight: 'bold', width: '10%' }}>
+                        Semester
+                      </TableCell>
+                      <TableCell sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, fontWeight: 'bold', width: '10%' }} align="right">
+                        Actions
+                      </TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {courses.map((course) => (
                       <TableRow key={course._id} hover>
-                        <TableCell>{course.code}</TableCell>
-                        <TableCell>{course.name}</TableCell>
-                        <TableCell>{course.department?.name}</TableCell>
-                        <TableCell>{course.semester}</TableCell>
+                        <TableCell sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+                          {course.code}
+                        </TableCell>
+                        <TableCell sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+                          {course.name}
+                        </TableCell>
+                        <TableCell sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+                          {course.department?.name || '-'}
+                        </TableCell>
+                        <TableCell sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+                          {course.semester}
+                        </TableCell>
                         <TableCell align="right">
                           <Tooltip title="Edit">
-                            <IconButton 
-                              size="small" 
+                            <IconButton
+                              size="small"
                               onClick={() => handleEdit(course)}
                               disabled={loading}
+                              sx={{ p: { xs: 0.5, sm: 1 } }}
                             >
                               <EditIcon fontSize="small" />
                             </IconButton>
                           </Tooltip>
                           <Tooltip title="Delete">
-                            <IconButton 
-                              size="small" 
+                            <IconButton
+                              size="small"
                               onClick={() => handleDelete(course._id)}
                               disabled={loading}
+                              sx={{ p: { xs: 0.5, sm: 1 } }}
                             >
                               <DeleteIcon fontSize="small" />
                             </IconButton>
@@ -434,4 +526,4 @@ export default function CourseManagement() {
       </Grid>
     </Container>
   );
-} 
+}

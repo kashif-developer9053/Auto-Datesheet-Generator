@@ -322,8 +322,8 @@ export default function CreateManualDatesheet({
               <Grid container spacing={3}>
                 <Grid item xs={12}>
                   <TextField
-                    fullWidth
-                    label="Datesheet Name"
+                      sx={{ fontSize: { xs: '0.875rem', sm: '1rem' ,  minWidth: 250 } }}
+                      label="Datesheet Name"
                     value={formData.name}
                     onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
                     required
@@ -331,15 +331,16 @@ export default function CreateManualDatesheet({
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
-                    fullWidth
-                    label="Academic Year"
+                      sx={{ fontSize: { xs: '0.875rem', sm: '1rem' ,  minWidth: 250 } }}
+                      label="Academic Year"
                     value={formData.academicYear}
                     onChange={(e) => setFormData((prev) => ({ ...prev, academicYear: e.target.value }))}
                     required
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth required>
+                  <FormControl fullWidth required                       sx={{ fontSize: { xs: '0.875rem', sm: '1rem' ,  minWidth: 250 } }}
+                  >
                     <InputLabel>Exam Period</InputLabel>
                     <Select
                       value={formData.examPeriod}
@@ -351,7 +352,8 @@ export default function CreateManualDatesheet({
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth required>
+                  <FormControl fullWidth required                       sx={{ fontSize: { xs: '0.875rem', sm: '1rem' ,  minWidth: 250 } }}
+                  >
                     <InputLabel>Department</InputLabel>
                     <Select
                       value={formData.departmentId}
@@ -374,8 +376,9 @@ export default function CreateManualDatesheet({
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth required>
+                <Grid item xs={12} sm={6}                       sx={{ fontSize: { xs: '0.875rem', sm: '1rem' ,  minWidth: 250 } }}
+                >
+                  <FormControl fullWidth required sx={{ minWidth: 250 }}>
                     <InputLabel>Batch</InputLabel>
                     <Select
                       value={formData.batchId}
@@ -390,7 +393,8 @@ export default function CreateManualDatesheet({
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={6}                       sx={{ fontSize: { xs: '0.875rem', sm: '1rem' ,  minWidth: 250 } }}
+                >
                   <TextField
                     fullWidth
                     label="Semester"
@@ -399,7 +403,8 @@ export default function CreateManualDatesheet({
                     required
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={6}                       sx={{ fontSize: { xs: '0.875rem', sm: '1rem' ,  minWidth: 250 } }}
+                >
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <DatePicker
                       label="Start Date"
@@ -409,7 +414,8 @@ export default function CreateManualDatesheet({
                     />
                   </LocalizationProvider>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={6}                       sx={{ fontSize: { xs: '0.875rem', sm: '1rem' ,  minWidth: 250 } }}
+                >
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <DatePicker
                       label="End Date"
@@ -428,7 +434,7 @@ export default function CreateManualDatesheet({
             <Paper sx={{ p: 3, mb: 3 }}>
               <Grid container spacing={3}>
                 <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
+                  <FormControl fullWidth sx={{ minWidth: 250 }}>
                     <InputLabel>Course</InputLabel>
                     <Select
                       value={currentExam.courseId}
@@ -466,7 +472,7 @@ export default function CreateManualDatesheet({
                   </LocalizationProvider>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
+                  <FormControl fullWidth sx={{ minWidth: 250 }}>
                     <InputLabel>Time Slot</InputLabel>
                     <Select
                       value={
@@ -489,7 +495,7 @@ export default function CreateManualDatesheet({
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
+                  <FormControl fullWidth sx={{ minWidth: 250 }}>
                     <InputLabel>Room</InputLabel>
                     <Select
                       value={currentExam.roomAssignments[0].roomId || ''}
@@ -516,7 +522,7 @@ export default function CreateManualDatesheet({
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
+                  <FormControl fullWidth sx={{ minWidth: 250 }}>
                     <InputLabel>Faculty</InputLabel>
                     <Select
                       value={currentExam.roomAssignments[0].facultyId || ''}

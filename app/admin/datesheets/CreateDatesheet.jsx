@@ -165,8 +165,8 @@ export default function CreateDatesheet({
               <Grid container spacing={3}>
                 <Grid item xs={12}>
                   <TextField
-                    fullWidth
-                    label="Datesheet Name"
+                      sx={{ fontSize: { xs: '0.875rem', sm: '1rem' ,  minWidth: 250 } }}
+                      label="Datesheet Name"
                     value={formData.name || ''}
                     onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
                     required
@@ -174,15 +174,16 @@ export default function CreateDatesheet({
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
-                    fullWidth
-                    label="Academic Year"
+                      sx={{ fontSize: { xs: '0.875rem', sm: '1rem' ,  minWidth: 250 } }}
+                      label="Academic Year"
                     value={formData.academicYear || ''}
                     onChange={(e) => setFormData((prev) => ({ ...prev, academicYear: e.target.value }))}
                     required
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth required>
+                  <FormControl                       sx={{ fontSize: { xs: '0.875rem', sm: '1rem' ,  minWidth: 250 } }}
+ required>
                     <InputLabel>Exam Period</InputLabel>
                     <Select
                       value={formData.examPeriod || ''}
@@ -203,7 +204,8 @@ export default function CreateDatesheet({
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12}                       sx={{ fontSize: { xs: '0.875rem', sm: '1rem' ,  minWidth: 250 } }}
+sm={6}>
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <DatePicker
                       label="Start Date"
@@ -213,7 +215,8 @@ export default function CreateDatesheet({
                     />
                   </LocalizationProvider>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12}                       sx={{ fontSize: { xs: '0.875rem', sm: '1rem' ,  minWidth: 250 } }}
+ sm={6}>
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <DatePicker
                       label="End Date"
