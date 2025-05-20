@@ -3,7 +3,8 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useState } from 'react';
+import { signOut } from 'next-auth/react';
+import { useEffect, useState } from 'react';
 import {
   Users,
   BookOpen,
@@ -22,13 +23,15 @@ export default function AdminLayout({ children }) {
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  if (status === 'loading') {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>;
-  }
+  // Handle redirect after render
+  useEffect(() => {
+    if (status !== 'loading' && !session) {
+      router.push('/login');
+    }
+  }, [status, session, router]);
 
-  if (!session) {
-    router.push('/login');
-    return null;
+  if (status === 'loading' || !session) {
+    return <div className="flex items-center justify-center h-screen">Loading...</div>;
   }
 
   const isStudent = session.user.role === 'student';
@@ -48,9 +51,13 @@ export default function AdminLayout({ children }) {
         { name: 'Settings', icon: Settings, href: '/admin/settings' },
       ];
 
+  const handleSignout = () => {
+    signOut({ callbackUrl: '/login' });
+  };
+
   return (
     <div className="flex h-screen">
-      {/* Mobile Menu Button (Visible when sidebar is closed) */}
+      {/* Mobile Menu Button */}
       <button
         onClick={() => setIsSidebarOpen(true)}
         className={`${
@@ -63,9 +70,7 @@ export default function AdminLayout({ children }) {
       {/* Sidebar */}
       <div
         className={`${
-          isSidebarOpen
-            ? 'fixed inset-0 w-full sm:w-64'
-            : 'hidden sm:block sm:w-20'
+          isSidebarOpen ? 'fixed inset-0 w-full sm:w-64' : 'hidden sm:block sm:w-20'
         } bg-white shadow-lg transition-all duration-300 flex flex-col z-40 sm:static sm:h-full`}
       >
         <div className="flex items-center justify-between p-4 border-b">
@@ -97,7 +102,7 @@ export default function AdminLayout({ children }) {
 
         <div className="p-4 border-t">
           <button
-            onClick={() => router.push('/api/auth/signout')}
+            onClick={handleSignout}
             className="flex items-center w-full p-2 text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-lg text-sm sm:text-base"
           >
             <LogOut size={20} />
@@ -106,7 +111,7 @@ export default function AdminLayout({ children }) {
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Content Area */}
       <div
         className={`flex-1 overflow-auto bg-gray-100 sm:block ${
           isSidebarOpen ? 'hidden' : 'block'
